@@ -1,3 +1,6 @@
 FROM gcc
 MAINTAINER Nathan LeClaire <nathan.leclaire@gmail.com>
-CMD ["entrypoint.sh"]
+
+ADD ./entrypoint.sh /entrypoint.sh
+
+CMD ["/entrypoint.sh"]
