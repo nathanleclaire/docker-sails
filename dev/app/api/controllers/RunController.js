@@ -51,8 +51,6 @@ module.exports = {
         }
 
         gistId = req.body.gistUrl.split('/').pop();
-        console.log(gistId);
-
         request.get({
             url: 'https://api.github.com/gists/'+gistId, 
             json: true,
@@ -61,30 +59,44 @@ module.exports = {
                 'User-Agent': 'nathanleclaire\'s Glass Bead Game'
             }
         }, function(error, response, body) {
-            var language, imageName, file;
+            var language, imageName, file, fileName;
             if (!error && response.statusCode === 200) {
-                for (file in body.files) { break; }
-                console.log(file);
-                imageName = languageToImageMap[body.files[file].language];
-                console.log(imageName);
+
+                // just get the first one (only single-file Gists for now)
+                for (fileName in body.files) { 
+                    break; 
+                }
+                file = body.files[fileName];
+                
+                imageName = languageToImageMap[file.language];
+                
                 docker.createContainer({
                     Tty: true,
-                    Image: imageName
+                    Image: imageName,
+                    Env: [
+                        'FILE_URL=' + file.raw_url
+                    ],
+                    Cmd: []
                 }, function(err, container) {
                     var containerId;
-                    console.log(container);
-                    console.log(err);
                     containerId = container.id;
                     container.attach({
                         stream: true, 
                         stdout: true, 
                         stderr: true
                     }, function (err, stream) {
+                        if (err) console.log(err);
                         containerToStreamMap[containerId] = stream;
-                        res.redirect('/run/stream/'+containerId);
+                        container.start(function(err, data) {
+                            container.wait(function(err, data) {
+                                if (err) console.log(err);
+                                console.log(data);
+                                res.redirect('/run/stream/'+containerId);
+                            })
+                        });
                     });
                 });
             }
         });
-}
+    }
 };
