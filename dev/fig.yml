@@ -1,7 +1,3 @@
-db:
-    image: postgres
-    volumes:
-     - /var/lib/postgresql/data:/var/lib/postgresql/data
 web:
     build: .
     volumes_from:
@@ -10,3 +6,7 @@ web:
      - "1337:1337"
     links:
      - db
+db:
+    image: postgres
+    volumes:
+     - /var/lib/postgresql/data:/var/lib/postgresql/data

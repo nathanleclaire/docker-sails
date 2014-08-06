@@ -7,5 +7,7 @@ RUN npm install grunt-cli -g
 
 EXPOSE 1337
 
-WORKDIR /data/sails_tinker/app
-ENTRYPOINT ["nodemon", "app.js"]
+RUN mkdir -p /data/app
+WORKDIR /data/app
+
+CMD ["nodemon", "/data/app/app.js"]
