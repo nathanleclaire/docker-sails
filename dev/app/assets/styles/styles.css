@@ -7,4 +7,9 @@ pre.term {
 	font-family: "Ubuntu Mono", "Monaco", "Consolas", monospace;
 	padding: 3px 3px;
 	line-height: 100%;
+	margin: 0px 0px;
+}
+
+body {
+	background-color: #F6F6F6;
 }

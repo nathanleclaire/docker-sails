@@ -35,7 +35,7 @@
     <!--STYLES END-->
   </head>
 
-  <body>
+  <body ng-app="gbg">
     <%- body %>
 
 
@@ -91,8 +91,15 @@
 
     <!--SCRIPTS-->
     <script src="/js/dependencies/sails.io.js"></script>
+    <script src="/js/angular-sails.js"></script>
     <script src="/js/angular.min.js"></script>
     <script src="/js/jquery-2.1.1.min.js"></script>
     <!--SCRIPTS END-->
+    <script>
+        var app = angular.module('gbg', ['ngSails']);
+        app.controller('MainCtrl', function($scope) {
+          console.log("made it!");
+        });
+    </script>
   </body>
 </html>

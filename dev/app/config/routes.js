@@ -37,6 +37,7 @@
   },
 
   'GET /run/stream/:id': 'RunController.stream',
+  '/run/connectstream/:id': 'RunController.connectStream',
 
   /***************************************************************************
   *                                                                          *
