@@ -1,0 +1,10 @@
+pre.term {
+	height: 100%;
+	width :100%;
+	background-color: black;
+	color: white;
+	position: absolute;
+	font-family: "Ubuntu Mono", "Monaco", "Consolas", monospace;
+	padding: 3px 3px;
+	line-height: 100%;
+}
