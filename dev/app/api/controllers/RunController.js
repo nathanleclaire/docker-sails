@@ -19,7 +19,15 @@ module.exports = {
     },
 
     connectStream: function(req, res) {
-        res.pipe(containerToStreamMap[req.param('id')]);
+        Container.findOne({
+            containerId: req.param('id')
+        }, function(err, container) {
+            if (err) {
+                console.log(err);
+                return;
+            }
+            Container.subscribe(req.socket, container);
+        });
     },
 
     stream: function(req, res) {
@@ -29,9 +37,7 @@ module.exports = {
     },
 
     trigger: function(req, res) {
-        var gistId, containerId, languageToImageMap, docker, socket, that;
-
-        that = this;
+        var gistId, containerId, languageToImageMap, docker, socket;
 
         socket = req.socket;
 
@@ -86,11 +92,35 @@ module.exports = {
                         stderr: true
                     }, function (err, stream) {
                         if (err) console.log(err);
-                        containerToStreamMap[containerId] = stream;
+                        Container.create({
+                            containerId: containerId,
+                            logs: ''
+                        }).exec(function() {});
+                        stream.on('data', function(chunk) {
+                            Container.findOne({
+                                containerId: containerId                                
+                            }, function(err, container) {
+                                var newLogs;
+                                if (err) {
+                                    console.log(err);
+                                    return;
+                                }
+                                if (chunk) {
+                                    newLogs = container.logs + chunk;
+                                    Container.update({
+                                        containerId: containerId
+                                    }, {
+                                        logs: newLogs
+                                    }).exec(function() {});
+                                    Container.publishUpdate(containerId, {
+                                        logs: newLogs
+                                    });
+                                }       
+                            });
+                        });
                         container.start(function(err, data) {
                             container.wait(function(err, data) {
                                 if (err) console.log(err);
-                                console.log(data);
                                 res.redirect('/run/stream/'+containerId);
                             })
                         });
